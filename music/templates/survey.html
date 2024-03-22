@@ -1,0 +1,295 @@
+{%  extends "home.html"  %}
+{% block home %}
+
+    <style>
+        #body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            {% comment %} background-color: #f0f0f0; {% endcomment %}
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
+        form {
+            width: 80%;
+            max-width: 600px;
+            background-color: #676666;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        fieldset {
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        label {
+            margin-right: 10px;
+        }
+        button {
+            background-color: #325a85;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #489af2;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 20px;
+            text-align: center;
+        }
+        .question {
+            display: none;
+        }
+        .active-question {
+            display: block;
+        }
+        .subhead {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .options label {
+            font-size: 16px;
+            display: block;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            transition: background-color 0.3s;
+        }
+        .options label:hover {
+            background-color: #f0f0f0;
+        }
+        .question legend {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #f3f5f7;
+        }
+        .progress-bar {
+            background-color: #ddd;
+            height: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .progress {
+            background-color: #b4d6fc;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+    </style>
+<div id='body'>
+<form>
+    <div class="progress-bar">
+        <div class="progress" style="width: 0;"></div>
+    </div>
+    <div id="question1" class="question active-question">
+        <fieldset>
+            <!-- <p class="subhead">How are you feeling today your overall energy?</p> -->
+            <legend>How would you describe your overall energy level today?</legend>
+            <div class="options">
+                <label for="q1Choice1"><input type="radio" id="q1Choice1" name="question1" value="0">High</label>
+                <label for="q1Choice2"><input type="radio" id="q1Choice2" name="question1" value="1"> Moderate</label>
+                <label for="q1Choice3"><input type="radio" id="q1Choice3" name="question1" value="2">   Low</label>
+                <!-- <label for="q1Choice4"><input type="radio" id="q1Choice4" name="question1" value="3"> Nearly every day</label> -->
+            </div>
+            <button type="button" class="mt-2 ml-1" onclick="handleNextQuestion('question2')">Next Question</button>
+        </fieldset>
+    </div>
+    <div id="question2" class="question">
+        <fieldset>
+            <legend>How do you feel about your current workload or responsibilities?</legend>
+            <!-- <p class="subhead">Over the last 2 weeks, how often have you been bothered by any of the following problems?</p> -->
+            <div class="options">
+                <label for="q2Choice1"><input type="radio" id="q2Choice1" name="question2" value="0">Overwhelmed</label>
+                <label for="q2Choice2"><input type="radio" id="q2Choice2" name="question2" value="1"> Manageable</label>
+                <label for="q2Choice3"><input type="radio" id="q2Choice3" name="question2" value="2">Underwhelmed</label>
+                <!-- <label for="q2Choice4"><input type="radio" id="q2Choice4" name="question2" value="3"> Nearly every day</label> -->
+            </div>
+            <button type="button" class="mt-2 ml-1"  onclick="handleNextQuestion('question3')">Next Question</button>
+        </fieldset>
+    </div>
+
+    <div id="question3" class="question">
+        <fieldset>
+            <legend>How would you rate your satisfaction with your recent accomplishments?</legend>
+            <!-- <p class="subhead">Over the last 2 weeks, how often have you been bothered by any of the following problems?</p> -->
+            <div class="options">
+                <label for="q3Choice1"><input type="radio" id="q3Choice1" name="question3" value="0"> Very satisfied</label>
+                <label for="q3Choice2"><input type="radio" id="q3Choice2" name="question3" value="1"> Somewhat satisfied</label>
+                <label for="q3Choice3"><input type="radio" id="q3Choice3" name="question3" value="2"> Not satisfied</label>
+                <!-- <label for="q3Choice4"><input type="radio" id="q3Choice4" name="question3" value="3"> Nearly every day</label> -->
+            </div>
+            <button type="button" class="mt-2 ml-1"  onclick="handleNextQuestion('question4')">Next Question</button>
+        </fieldset>
+    </div>
+
+    <div id="question4" class="question">
+        <fieldset>
+            <legend>How are you feeling about your personal relationships lately?
+            </legend>
+            <!-- <p class="subhead">Over the last 2 weeks, how often have you been bothered by any of the following problems?</p> -->
+            <div class="options">
+                <label for="q4Choice1"><input type="radio" id="q4Choice1" name="question4" value="0">  Happy and fulfilled</label>
+                <label for="q4Choice2"><input type="radio" id="q4Choice2" name="question4" value="1"> Neutral</label>
+                <label for="q4Choice3"><input type="radio" id="q4Choice3" name="question4" value="2"> Stressed or strained</label>
+                <!-- <label for="q4Choice4"><input type="radio" id="q4Choice4" name="question4" value="3"> Nearly every day</label> -->
+            </div>
+            <button type="button" class="mt-2 ml-1"  onclick="handleNextQuestion('question5')">Next Question</button>
+        </fieldset>
+    </div>
+
+    <div id="question5" class="question">
+        <fieldset>
+            <legend>How would you describe your level of motivation right now?</legend>
+            <!-- <p class="subhead">Over the last 2 weeks, how often have you been bothered by any of the following problems?</p> -->
+            <div class="options">
+                <label for="q5Choice1"><input type="radio" id="q5Choice1" name="question5" value="0">Very motivated</label>
+                <label for="q5Choice2"><input type="radio" id="q5Choice2" name="question5" value="1"> Moderately motivated</label>
+                <label for="q5Choice3"><input type="radio" id="q5Choice3" name="question5" value="2">Not motivated</label>
+                <!-- <label for="q5Choice4"><input type="radio" id="q5Choice4" name="question5" value="3"> Nearly every day</label> -->
+            </div>
+            <button type="button" class="mt-2 ml-1"  onclick="handleNextQuestion('question6')">Next Question</button>
+        </fieldset>
+    </div>
+
+    <div id="question6" class="question">
+        <fieldset>
+            <legend>How do you perceive your ability to handle challenges or setbacks?</legend>
+            <!-- <p class="subhead">Over the last 2 weeks, how often have you been bothered by any of the following problems?</p> -->
+            <div class="options">
+                <label for="q6Choice1"><input type="radio" id="q6Choice1" name="question6" value="0">  Confident</label>
+                <label for="q6Choice2"><input type="radio" id="q6Choice2" name="question6" value="1"> Unsure</label>
+                <label for="q6Choice3"><input type="radio" id="q6Choice3" name="question6" value="2"> Overwhelmed</label>
+                <!-- <label for="q6Choice4"><input type="radio" id="q6Choice4" name="question6" value="3"> Nearly every day</label> -->
+            </div>
+            <button type="button" class="mt-2 ml-1"  onclick="handleNextQuestion('question7')">Next Question</button>
+        </fieldset>
+    </div>
+
+    <div id="question7" class="question">
+        <fieldset>
+            <legend>How would you describe your mood overall?</legend>
+            <!-- <p class="subhead">Over the last 2 weeks, how often have you been bothered by any of the following problems?</p> -->
+            <div class="options">
+                <label for="q7Choice1"><input type="radio" id="q7Choice1" name="question7" value="0">Positive and upbeat</label>
+                <label for="q7Choice2"><input type="radio" id="q7Choice2" name="question7" value="1"> Neutral or indifferent</label>
+                <label for="q7Choice3"><input type="radio" id="q7Choice3" name="question7" value="2"> Negative or down</label>
+                <!-- <label for="q7Choice4"><input type="radio" id="q7Choice4" name="question7" value="3"> Nearly every day</label> -->
+            </div>
+            <button type="button" class="mt-2 ml-1"  onclick="handleNextQuestion('question8')">Next Question</button>
+        </fieldset>
+    </div>
+
+    <div id="question8" class="question">
+        <fieldset>
+            <legend>How often have you been experiencing feelings of anxiety or worry recently?</legend>
+            <!-- <p class="subhead">Over the last 2 weeks, how often have you been bothered by any of the following problems?</p> -->
+            <div class="options">
+                <label for="q8Choice1"><input type="radio" id="q8Choice1" name="question8" value="0">Frequently</label>
+                <label for="q8Choice2"><input type="radio" id="q8Choice2" name="question8" value="1"> Occasionally</label>
+                <label for="q8Choice3"><input type="radio" id="q8Choice3" name="question8" value="2">Rarely or never</label>
+                <!-- <label for="q8Choice4"><input type="radio" id="q8Choice4" name="question8" value="3"> Nearly every day</label> -->
+            </div>
+            <button type="button" class="mt-2 ml-1"  onclick="handleNextQuestion('question9')">Next Question</button>
+        </fieldset>
+    </div>
+
+    <div id="question9" class="question">
+        <fieldset>
+            <legend>How would you rate your overall sense of contentment or happiness?</legend>
+            <!-- <p class="subhead">Over the last 2 weeks, how often have you been bothered by any of the following problems?</p> -->
+            <div class="options">
+                <label for="q9Choice1"><input type="radio" id="q9Choice1" name="question9" value="0"> Very content/happy</label>
+                <label for="q9Choice2"><input type="radio" id="q9Choice2" name="question9" value="1"> Somewhat content/happy</label>
+                <label for="q9Choice3"><input type="radio" id="q9Choice3" name="question9" value="2">Not content/happy</label>
+                <!-- <label for="q9Choice4"><input type="radio" id="q9Choice4" name="question9" value="3"> Nearly every day</label> -->
+            </div>
+            <button type="button" class="mt-2 ml-1"  onclick="handleNextQuestion('question10')">Next Question</button>
+        </fieldset>
+    </div>
+    <div id="question10" class="question">
+        <fieldset>
+            <legend>How would you describe your sleep quality and patterns lately?</legend>
+            <!-- <p class="subhead">Over the last 2 weeks, how often have you been bothered by any of the following problems?</p> -->
+            <div class="options">
+                <label for="q10Choice1"><input type="radio" id="q10Choice1" name="question10" value="0"> Restful and consistent</label>
+                <label for="q10Choice2"><input type="radio" id="q10Choice2" name="question10" value="1"> Variable or disrupted</label>
+                <label for="q10Choice3"><input type="radio" id="q10Choice3" name="question10" value="2">Poor or insufficient</label>
+                <!-- <label for="q9Choice4"><input type="radio" id="q9Choice4" name="question10" value="3"> Nearly every day</label> -->
+            </div>
+            <button type="button" class="mt-2 ml-1"  onclick="calculateResult()">Calculate Result</button>
+        </fieldset>
+    </div>
+
+    <div id="result"></div>
+</form>
+</div>
+<script>
+   const totalQuestions = 10; // Adjust this if you have more questions
+    let currentQuestionIndex = 1;
+
+    function updateProgressBar() {
+        const progress = (currentQuestionIndex / totalQuestions) * 100;
+        document.querySelector('.progress').style.width = `${progress}%`;
+    }
+
+    function showQuestion(questionId) {
+        document.querySelectorAll('.question').forEach(question => {
+            question.classList.remove('active-question');
+        });
+
+        document.getElementById(questionId).classList.add('active-question');
+        document.getElementById(questionId).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function handleNextQuestion(nextQuestionId) {
+        const currentQuestion = document.querySelector('.active-question');
+        const selectedOption = currentQuestion.querySelector('input[name="' + currentQuestion.id + '"]:checked');
+
+        if (selectedOption) {
+            currentQuestionIndex++;
+            updateProgressBar();
+            showQuestion(nextQuestionId);
+        } else {
+            alert('Please select an option before proceeding.');
+        }
+    }
+
+    function calculateResult() {
+        const questions = document.querySelectorAll('.question');
+        let result = 0;
+
+        questions.forEach((question, index) => {
+            const selectedOption = document.querySelector(`input[name="question${index + 1}"]:checked`);
+            if (selectedOption) {
+                result += parseInt(selectedOption.value);
+            }
+        });
+
+        window.location.href = `{% url 'r' %}?score=${result}`;
+    }
+
+    updateProgressBar(); // Call to initialize progress bar
+</script>
+
+{% endblock %}

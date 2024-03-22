@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detection</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>Emotion Detection</h1>
+        <div>
+            <video id="videoElement" autoplay></video>
+            <canvas id="canvasOutput" width="640" height="480"></canvas>
+            <p>Detected Emotion: {{ detectedEmotion }}</p>
+        </div>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                detectedEmotion: ''
+            },
+            mounted() {
+                this.setupCamera();
+            },
+            methods: {
+                async setupCamera() {
+                    const video = document.getElementById('videoElement');
+                    if (navigator.mediaDevices.getUserMedia) {
+                        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        video.srcObject = stream;
+                        this.detectEmotion();
+                    }
+                },
+                detectEmotion() {
+                    const video = document.getElementById('videoElement');
+                    const canvas = document.getElementById('canvasOutput');
+                    const context = canvas.getContext('2d');
+                    const emotionDict = {
+                        0: "Angry",
+                        1: "Disgusted",
+                        2: "Fearful",
+                        3: "Happy",
+                        4: "Neutral",
+                        5: "Sad",
+                        6: "Surprised"
+                    };
+                    
+                    setInterval(() => {
+                        context.drawImage(video, 0, 0, 640, 480);
+                        const imageData = canvas.toDataURL('image/jpeg');
+
+                        // Fetch CSRF token from cookies
+                        const csrftoken = this.getCookie('csrftoken');
+
+                        fetch('{% url "detect_emotions" %}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrftoken
+                            },
+                            body: JSON.stringify({ image_data: imageData })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.detectedEmotion = emotionDict[data.emotion_index];
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    }, 1000); // Adjust interval as needed
+                },
+                getCookie(name) {
+                    const value = `; ${document.cookie}`;
+                    const parts = value.split(`; ${name}=`);
+                    if (parts.length === 2) return parts.pop().split(';').shift();
+                }
+            }
+        });
+    </script>
+    
+</body>
+</html>
