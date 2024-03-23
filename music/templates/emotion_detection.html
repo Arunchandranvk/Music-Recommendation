@@ -3,83 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emotion Detection</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <title>Emotion Detection Result</title>
+    <meta charset="utf-8">
+     
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #emotion-label {
+            font-size: 24px;
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+
+    
 </head>
 <body>
-    <div id="app">
-        <h1>Emotion Detection</h1>
-        <div>
-            <video id="videoElement" autoplay></video>
-            <canvas id="canvasOutput" width="640" height="480"></canvas>
-            <p>Detected Emotion: {{ detectedEmotion }}</p>
-        </div>
-    </div>
+    <h1>Emotion Detection Result</h1>
+    <a href= '{% url "detect_emotions" %}' class="btn btn-info">detect</a>
+    <div id="emotion-label">Loading...</div>
 
-    <script>
-        var app = new Vue({
-            el: '#app',
-            data: {
-                detectedEmotion: ''
-            },
-            mounted() {
-                this.setupCamera();
-            },
-            methods: {
-                async setupCamera() {
-                    const video = document.getElementById('videoElement');
-                    if (navigator.mediaDevices.getUserMedia) {
-                        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                        video.srcObject = stream;
-                        this.detectEmotion();
-                    }
-                },
-                detectEmotion() {
-                    const video = document.getElementById('videoElement');
-                    const canvas = document.getElementById('canvasOutput');
-                    const context = canvas.getContext('2d');
-                    const emotionDict = {
-                        0: "Angry",
-                        1: "Disgusted",
-                        2: "Fearful",
-                        3: "Happy",
-                        4: "Neutral",
-                        5: "Sad",
-                        6: "Surprised"
-                    };
-                    
-                    setInterval(() => {
-                        context.drawImage(video, 0, 0, 640, 480);
-                        const imageData = canvas.toDataURL('image/jpeg');
+       <div id="emotion-label" class="btn btn-outline-success mt-2">{{ emotion_label }}</div>
+       
+       <div class="row" style="width: 100%;height: 300px;">
+       {% for i in data %}
+       {% if i.type == emotion_label %}
+       <div class="col-lg-3 " >
 
-                        // Fetch CSRF token from cookies
-                        const csrftoken = this.getCookie('csrftoken');
+        <div class="card mt-2 ml-1">         
+          <div class="card card-body">
+        <img class="card-img-top" src="{{ i.img.url }}" alt="Card image cap" height="250px">
+        <div class="card-body">
+          <h5 class="card-title">{{i.name}}</h5>
+          <audio controls>
+            <source src="{{ i.file.url }}" type="audio/mp3">
+            Your browser does not support the audio element.
+          </audio>        </div>
+        <!-- <ul class="list-group list-group-flush">
+          <li class="list-group-item">Cras justo odio</li>
+          <li class="list-group-item">Dapibus ac facilisis in</li>
+          <li class="list-group-item">Vestibulum at eros</li>
+        </ul> -->
+       
+      </div>
+      </div>
+      </div>
+      {% endif %}
+{% endfor %}
+</div>
+<hr>
+<div class="row" style="width: 100%;height: 300px;">
+       {% for i in data %}
+       <div class="col-lg-3 " >
+        <div class="card mt-2 ml-1">         
+          <div class="card card-body">
+        <img class="card-img-top" src="{{ i.img.url }}" alt="Card image cap" height="250px">
+        <div class="card-body">
+          <h5 class="card-title">{{i.name}}</h5>
+          <audio controls>
+            <source src="{{ i.file.url }}" type="audio/mp3">
+            Your browser does not support the audio element.
+          </audio>        </div>
+        <!-- <ul class="list-group list-group-flush">
+          <li class="list-group-item">Cras justo odio</li>
+          <li class="list-group-item">Dapibus ac facilisis in</li>
+          <li class="list-group-item">Vestibulum at eros</li>
+        </ul> -->
+       
+      </div>
+      </div>
+      </div>
+{% endfor %}
+</div>
 
-                        fetch('{% url "detect_emotions" %}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': csrftoken
-                            },
-                            body: JSON.stringify({ image_data: imageData })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            this.detectedEmotion = emotionDict[data.emotion_index];
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                    }, 1000); // Adjust interval as needed
-                },
-                getCookie(name) {
-                    const value = `; ${document.cookie}`;
-                    const parts = value.split(`; ${name}=`);
-                    if (parts.length === 2) return parts.pop().split(';').shift();
-                }
-            }
-        });
-    </script>
-    
 </body>
 </html>

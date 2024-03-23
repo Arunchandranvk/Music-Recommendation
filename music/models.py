@@ -20,3 +20,14 @@ class Music(models.Model):
         ('Surprise','Surprise'),
     )
     type=models.CharField(max_length=100,choices=choices)
+
+
+
+class Score(models.Model):
+    score = models.IntegerField()
+    mood = models.CharField(max_length=50)
+
+
+class Emotion(models.Model):
+    emotion=models.CharField(max_length=100)  
+    timestamp = models.DateTimeField(auto_now_add=True,null=True)  
