@@ -13,6 +13,10 @@ import tensorflow as tf
 
 class Main(TemplateView):
     template_name='home.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['data']=Music.objects.all()
+        return context
 
 class Survey(TemplateView):
     template_name='survey.html'
